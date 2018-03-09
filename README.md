@@ -13,6 +13,6 @@ Gitの管理情報からゲームを識別するバージョンを生成する�
 
 ## License
 
-Codes are based on [the MIT Lisence](LICENSE).
+The source codes in this repository are based on [the MIT Lisence](LICENSE).
 
 本リポジトリに含まれるコードは、[MITライセンス](LICENSE)に基づきます。
