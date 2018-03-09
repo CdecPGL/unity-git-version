@@ -219,16 +219,18 @@ namespace PlanetaGameLabo {
 			//内部バージョン情報アセットを作成
 			var version_holder = ScriptableObject.CreateInstance<GitVersionHolder>();
 			version_holder.version = GenerateVersionFromGit();
-			//GitVersion用リソースディレクトリがなかったら作成
-			MakeAssetDirectoryRecursively(RESOURCE_DIRECTORY);
-			//古い内部バージョンアセットが残っていたら削除
-			AssetDatabase.DeleteAsset(VERSION_HOLDER_PATH);
-			//新しいアセットを保存
-			AssetDatabase.CreateAsset(version_holder, VERSION_HOLDER_PATH);
-			AssetDatabase.SaveAssets();
-			//gitignoreが存在しなかったら保存する
-			CreateGitIgnore();
-
+			//バージョンが有効な場合にのみ作成
+			if (version_holder.version.isValid) {
+				//GitVersion用リソースディレクトリがなかったら作成
+				MakeAssetDirectoryRecursively(RESOURCE_DIRECTORY);
+				//古い内部バージョンアセットが残っていたら削除
+				AssetDatabase.DeleteAsset(VERSION_HOLDER_PATH);
+				//新しいアセットを保存
+				AssetDatabase.CreateAsset(version_holder, VERSION_HOLDER_PATH);
+				AssetDatabase.SaveAssets();
+				//gitignoreが存在しなかったら保存する
+				CreateGitIgnore();
+			}
 		}
 
 		[InitializeOnLoadMethod]
