@@ -17,7 +17,7 @@ In that time, an asset which has version information is saved on "Assets/Planeta
 
 ### Show Version on Editor
 
-By selecting "GitVersion->Log VersionString" in the menu bar, a version string is logged to the console window.
+By selecting "Tools->GitVersion->Log VersionString" in the menu bar, a version string is logged to the console window.
 
 ### Get Version in Scripts
 
@@ -53,7 +53,7 @@ else{
 
 ## Setting
 
-By clicking "GitVersion->Setting" in the menu bar, you can open a setting window of GitVersion.
+By clicking "Tools->GitVersion->Setting" in the menu bar, you can open a setting window of GitVersion.
 
 ### Version String Format
 

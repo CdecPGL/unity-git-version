@@ -157,7 +157,7 @@ namespace PlanetaGameLabo {
 			}
 		}
 
-		[MenuItem("GitVersion/Log VersionString")]
+		[MenuItem("Tools/GitVersion/Log VersionString")]
 		private static void LogVersionString() {
 			var version_string = GenerateVersionFromGit();
 			Debug.Log(version_string.versionString);

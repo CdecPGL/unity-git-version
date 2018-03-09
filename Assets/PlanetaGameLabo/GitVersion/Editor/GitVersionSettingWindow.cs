@@ -18,7 +18,7 @@ namespace PlanetaGameLabo {
 		private GitVersionSetting _gitVersionSetting = null;
 		private bool _isAssetCreated = false;
 
-		[MenuItem("GitVersion/Setting")]
+		[MenuItem("Tools/GitVersion/Setting")]
 		private static void ShowWindow() {
 			var window = GetWindow(typeof(GitVersionSettingWindow), false, "GitVersion");
 			window.Show();

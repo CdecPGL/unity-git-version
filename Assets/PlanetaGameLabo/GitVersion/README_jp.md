@@ -17,7 +17,7 @@ Gitの管理情報からゲームを識別するバージョンを生成する�
 
 ### エディタ上でのバージョン確認
 
-メニューバーのGitVersion->Log VersionStringを選択することで、コンソールウインドウに現在のバージョン文字列が出力されます。
+メニューバーのTools->GitVersion->Log VersionStringを選択することで、コンソールウインドウに現在のバージョン文字列が出力されます。
 
 ### スクリプト内でのバージョン取得
 
@@ -53,7 +53,7 @@ else{
 
 ## 設定
 
-メニューバーのGitVersion->SettingからGitVersionの設定ウインドウを開くことができます。
+メニューバーのTools->GitVersion->SettingからGitVersionの設定ウインドウを開くことができます。
 
 ### バージョン文字列フォーマット
 
