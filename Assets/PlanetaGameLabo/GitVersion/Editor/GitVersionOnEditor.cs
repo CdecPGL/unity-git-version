@@ -21,7 +21,7 @@ namespace PlanetaGameLabo {
 	/// <summary>
 	/// A class including editor extension etc.
 	/// </summary>
-	public class GitVersionOnEditor : IPreprocessBuild {
+	public class GitVersionOnEditor : IPreprocessBuildWithReport {
 		public const string RESOURCE_DIRECTORY = RESOURCE_ROOT_DIRECTORY + GitVersion.RESOURCE_ASSET_DIRECTORY;
 		public const string VERSION_HOLDER_PATH = RESOURCE_DIRECTORY + GitVersionHolder.ASSET_NAME + ".asset";
 		public const string VERSION_SETTING_PATH = GIT_VERSION_ASSET_ROOT_DIRECTORY + "Editor/setting.asset";
@@ -242,7 +242,7 @@ namespace PlanetaGameLabo {
 			};
 		}
 
-		void IPreprocessBuild.OnPreprocessBuild(BuildTarget target, string path) {
+		void IPreprocessBuildWithReport.OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report) {
 			CreateVersionHolderAsset();
 		}
 	}
