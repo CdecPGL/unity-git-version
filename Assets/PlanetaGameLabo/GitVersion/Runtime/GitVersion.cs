@@ -95,10 +95,10 @@ namespace PlanetaGameLabo {
 			else if (!version.isValid || !target_version.isValid) {
 				return version.allowUnknownVersionMatching;
 			}
-			else if (version.tag != null && version.tag == target_version.tag) {
+			else if (!string.IsNullOrEmpty(version.tag) && version.tag == target_version.tag) {
 				return version.diffHash == target_version.diffHash;
 			}
-			else if (version.commitId != null && version.commitId == target_version.commitId) {
+			else if (!string.IsNullOrEmpty(version.commitId) && version.commitId == target_version.commitId) {
 				return version.diffHash == target_version.diffHash;
 			}
 			else {
