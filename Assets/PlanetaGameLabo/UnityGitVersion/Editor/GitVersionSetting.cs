@@ -10,18 +10,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEngine;
 
-namespace PlanetaGameLabo.UnityGitVersion.Editor {
-
-	public class GitVersionSetting : ScriptableObject {
-		[SerializeField]
-		public string versionStringFormat = "Commit-%c";
-		[SerializeField]
-		public string versionStringFormatWithDiff = "Commit-%c-diff-%d";
-		[SerializeField]
-		public string versionStringFormatWithTag = "%t";
-		[SerializeField]
-		public string versionStringFormatWithTagAndDiff = "%t-diff-%d";
-		[SerializeField]
-		public bool allowUnknownVersionMatching = false;
-	}
+namespace PlanetaGameLabo.UnityGitVersion.Editor
+{
+    public class GitVersionSetting : ScriptableObject
+    {
+        [SerializeField] public string versionStringFormat = "Commit-%c";
+        [SerializeField] public string versionStringFormatWithDiff = "Commit-%c-diff-%d";
+        [SerializeField] public string versionStringFormatWithTag = "%t";
+        [SerializeField] public string versionStringFormatWithTagAndDiff = "%t-diff-%d";
+        [SerializeField] public bool allowUnknownVersionMatching;
+    }
 }

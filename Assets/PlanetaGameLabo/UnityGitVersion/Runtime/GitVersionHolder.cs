@@ -10,24 +10,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEngine;
 
-namespace PlanetaGameLabo.UnityGitVersion {
-	/// <summary>
-	/// This is a scriptable to hold a version string in executables, and this is created in prebuild process and removed in postbuild process.
-	/// This object is included in executables and refered from scripts in executables.
-	/// In editor, this object is not created and refered.
-	/// </summary>
-	public class GitVersionHolder : ScriptableObject {
-		/// <summary>
-		/// A name of the asset file to hold a version string.
-		/// </summary>
-		public const string ASSET_NAME = "version";
-		/// <summary>
-		/// A path of the asset file to hold a version string.
-		/// This is refered when load version holder.
-		/// </summary>
-		public const string ASSET_PATH = GitVersion.RESOURCE_ASSET_DIRECTORY + ASSET_NAME;
+namespace PlanetaGameLabo.UnityGitVersion
+{
+    /// <summary>
+    /// This is a scriptable to hold a version string in executables, and this is created in prebuild process and removed in post-build process.
+    /// This object is included in executables and referred from scripts in executables.
+    /// In editor, this object is not created and referred.
+    /// </summary>
+    public class GitVersionHolder : ScriptableObject
+    {
+        /// <summary>
+        /// A name of the asset file to hold a version string.
+        /// </summary>
+        public const string assetName = "version";
 
-		[SerializeField]
-		public GitVersion.Version version = new GitVersion.Version { versionString = "Unknown Version", isValid = false };
-	}
+        /// <summary>
+        /// A path of the asset file to hold a version string.
+        /// This is referred when load version holder.
+        /// </summary>
+        public const string assetPath = GitVersion.resourceAssetDirectory + assetName;
+
+        [SerializeField] public GitVersion.Version version = new GitVersion.Version
+            {versionString = "Unknown Version", isValid = false};
+    }
 }

@@ -10,48 +10,68 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEditor;
 
-namespace PlanetaGameLabo.UnityGitVersion.Editor {
-	/// <summary>
-	/// Editor window to set configurations about GitVersion.
-	/// </summary>
-	public class GitVersionSettingWindow : EditorWindow {
-		private GitVersionSetting _gitVersionSetting = null;
-		private bool _isAssetCreated = false;
+namespace PlanetaGameLabo.UnityGitVersion.Editor
+{
+    /// <summary>
+    /// Editor window to set configurations about GitVersion.
+    /// </summary>
+    public class GitVersionSettingWindow : EditorWindow
+    {
+        private GitVersionSetting _gitVersionSetting;
+        private bool _isAssetCreated;
 
-		[MenuItem("Tools/GitVersion/Setting")]
-		private static void ShowWindow() {
-			var window = GetWindow(typeof(GitVersionSettingWindow), false, "GitVersion");
-			window.Show();
-		}
+        [MenuItem("Tools/GitVersion/Setting")]
+        private static void ShowWindow()
+        {
+            var window = GetWindow(typeof(GitVersionSettingWindow), false, "GitVersion");
+            window.Show();
+        }
 
-		private void OnFocus() {
-			if (!_gitVersionSetting) {
-				_gitVersionSetting = AssetDatabase.LoadAssetAtPath<GitVersionSetting>(GitVersionOnEditor.VERSION_SETTING_PATH);
-				_isAssetCreated = true;
-				if (!_gitVersionSetting) {
-					_gitVersionSetting = CreateInstance<GitVersionSetting>();
-					_isAssetCreated = false;
-				}
-			}
-		}
+        private void OnFocus()
+        {
+            if (_gitVersionSetting)
+            {
+                return;
+            }
 
-		private void OnLostFocus() {
-			if (!_isAssetCreated) {
-				GitVersionOnEditor.MakeAssetDirectoryRecursively(GitVersionOnEditor.RESOURCE_DIRECTORY);
-				AssetDatabase.CreateAsset(_gitVersionSetting, GitVersionOnEditor.VERSION_SETTING_PATH);
-				_isAssetCreated = true;
-			}
-			AssetDatabase.SaveAssets();
-		}
+            _gitVersionSetting =
+                AssetDatabase.LoadAssetAtPath<GitVersionSetting>(GitVersionOnEditor.versionSettingPath);
+            _isAssetCreated = true;
+            if (_gitVersionSetting)
+            {
+                return;
+            }
 
-		private void OnGUI() {
-			EditorGUILayout.LabelField("Version String Formats", EditorStyles.boldLabel);
-			_gitVersionSetting.versionStringFormat = EditorGUILayout.TextField("Standard", _gitVersionSetting.versionStringFormat);
-			_gitVersionSetting.versionStringFormatWithDiff = EditorGUILayout.TextField("With Diff", _gitVersionSetting.versionStringFormatWithDiff);
-			_gitVersionSetting.versionStringFormatWithTag = EditorGUILayout.TextField("With Tag", _gitVersionSetting.versionStringFormatWithTag);
-			_gitVersionSetting.versionStringFormatWithTagAndDiff = EditorGUILayout.TextField("With Tag and Diff", _gitVersionSetting.versionStringFormatWithTagAndDiff);
-			EditorGUILayout.LabelField("Others", EditorStyles.boldLabel);
-			_gitVersionSetting.allowUnknownVersionMatching = EditorGUILayout.Toggle("AllowUnknownVersionMatching", _gitVersionSetting.allowUnknownVersionMatching);
-		}
-	}
+            _gitVersionSetting = CreateInstance<GitVersionSetting>();
+            _isAssetCreated = false;
+        }
+
+        private void OnLostFocus()
+        {
+            if (!_isAssetCreated)
+            {
+                GitVersionOnEditor.MakeAssetDirectoryRecursively(GitVersionOnEditor.resourceDirectory);
+                AssetDatabase.CreateAsset(_gitVersionSetting, GitVersionOnEditor.versionSettingPath);
+                _isAssetCreated = true;
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private void OnGUI()
+        {
+            EditorGUILayout.LabelField("Version String Formats", EditorStyles.boldLabel);
+            _gitVersionSetting.versionStringFormat =
+                EditorGUILayout.TextField("Standard", _gitVersionSetting.versionStringFormat);
+            _gitVersionSetting.versionStringFormatWithDiff =
+                EditorGUILayout.TextField("With Diff", _gitVersionSetting.versionStringFormatWithDiff);
+            _gitVersionSetting.versionStringFormatWithTag =
+                EditorGUILayout.TextField("With Tag", _gitVersionSetting.versionStringFormatWithTag);
+            _gitVersionSetting.versionStringFormatWithTagAndDiff = EditorGUILayout.TextField("With Tag and Diff",
+                _gitVersionSetting.versionStringFormatWithTagAndDiff);
+            EditorGUILayout.LabelField("Others", EditorStyles.boldLabel);
+            _gitVersionSetting.allowUnknownVersionMatching = EditorGUILayout.Toggle("AllowUnknownVersionMatching",
+                _gitVersionSetting.allowUnknownVersionMatching);
+        }
+    }
 }
