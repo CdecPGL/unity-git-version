@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEditor;
 
-namespace PlanetaGameLabo {
+namespace PlanetaGameLabo.UnityGitVersion.Editor {
 	/// <summary>
 	/// Editor window to set configurations about GitVersion.
 	/// </summary>

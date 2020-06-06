@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEngine;
 
-namespace PlanetaGameLabo {
+namespace PlanetaGameLabo.UnityGitVersion.Editor {
 
 	public class GitVersionSetting : ScriptableObject {
 		[SerializeField]

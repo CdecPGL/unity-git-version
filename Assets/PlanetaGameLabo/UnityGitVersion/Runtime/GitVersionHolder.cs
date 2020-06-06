@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using UnityEngine;
 
-namespace PlanetaGameLabo {
+namespace PlanetaGameLabo.UnityGitVersion {
 	/// <summary>
 	/// This is a scriptable to hold a version string in executables, and this is created in prebuild process and removed in postbuild process.
 	/// This object is included in executables and refered from scripts in executables.

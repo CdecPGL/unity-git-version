@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 using System;
 using UnityEngine;
 
-namespace PlanetaGameLabo {
+namespace PlanetaGameLabo.UnityGitVersion {
 	/// <summary>
 	/// An utility class to get a version string which is generated from commit id and tags of git.
 	/// </summary>

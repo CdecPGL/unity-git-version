@@ -17,7 +17,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace PlanetaGameLabo {
+namespace PlanetaGameLabo.UnityGitVersion.Editor {
 	/// <summary>
 	/// A class including editor extension etc.
 	/// </summary>
