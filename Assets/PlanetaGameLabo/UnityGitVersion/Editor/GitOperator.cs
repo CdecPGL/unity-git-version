@@ -15,6 +15,9 @@ using UnityEngine;
 
 namespace PlanetaGameLabo.UnityGitVersion.Editor
 {
+    /// <summary>
+    /// A class to operate git and get information.
+    /// </summary>
     public static class GitOperator
     {
         /// <summary>
@@ -229,15 +232,10 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
     }
-
-    internal sealed class CommandExecutionErrorException : Exception
-    {
-        public CommandExecutionErrorException(string command, string reason) : base(
-            $"Failed to execute command \"{command}\" due to \"{reason}\"")
-        {
-        }
-    }
-
+    
+    /// <summary>
+    /// An exception class for git command execution error.
+    /// </summary>
     public sealed class GitCommandExecutionError : Exception
     {
         public GitCommandExecutionError(string arguments, int exitCode, string standardError) : base(
@@ -247,6 +245,14 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 
         public GitCommandExecutionError(string arguments, string standardError) : base(
             $"Failed to execute git command with arguments \"{arguments}\". \"{standardError}\"")
+        {
+        }
+    }
+
+    internal sealed class CommandExecutionErrorException : Exception
+    {
+        public CommandExecutionErrorException(string command, string reason) : base(
+            $"Failed to execute command \"{command}\" due to \"{reason}\"")
         {
         }
     }

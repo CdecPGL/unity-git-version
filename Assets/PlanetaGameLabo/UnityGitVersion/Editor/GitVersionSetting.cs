@@ -12,12 +12,11 @@ using UnityEngine;
 
 namespace PlanetaGameLabo.UnityGitVersion.Editor
 {
-    public class GitVersionSetting : ScriptableObject
+    internal class GitVersionSetting : ScriptableObject
     {
-        [SerializeField] public string versionStringFormat = "c-%c";
-        [SerializeField] public string versionStringFormatWithDiff = "c-%c-d-%d";
+        [SerializeField] public string versionStringFormat = "commit-%c";
+        [SerializeField] public string versionStringFormatWithDiff = "commit-%c-%d";
         [SerializeField] public string versionStringFormatWithTag = "%t";
-        [SerializeField] public string versionStringFormatWithTagAndDiff = "%t-d-%d";
-        [SerializeField] public bool allowUnknownVersionMatching;
+        [SerializeField] public string versionStringFormatWithTagAndDiff = "%t-%d";
     }
 }
