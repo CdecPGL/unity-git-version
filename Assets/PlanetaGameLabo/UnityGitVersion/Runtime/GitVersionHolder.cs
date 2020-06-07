@@ -22,7 +22,7 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// <summary>
         /// A name of the asset file to hold a version string.
         /// </summary>
-        public const string assetName = "version";
+        public const string assetName = "Version";
 
         /// <summary>
         /// A path of the asset file to hold a version string.

@@ -8,10 +8,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Build;
@@ -26,9 +23,9 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
     {
         public const string resourceDirectory = _resourceRootDirectory + GitVersion.resourceAssetDirectory;
         public const string versionHolderPath = resourceDirectory + GitVersionHolder.assetName + ".asset";
-        public const string versionSettingPath = _gitVersionAssetRootDirectory + "Editor/setting.asset";
+        public const string versionSettingPath = _gitVersionAssetRootDirectory + "Editor/UnityGitVersionSetting.asset";
 
-        private const string _gitVersionAssetRootDirectory = "Assets/PlanetaGameLabo/GitVersion/";
+        private const string _gitVersionAssetRootDirectory = "Assets/PlanetaGameLabo/UnityGitVersion/";
         private const string _resourceRootDirectory = _gitVersionAssetRootDirectory + "Resources/";
 
         int IOrderedCallback.callbackOrder => 0;
@@ -50,7 +47,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             //バージョンの生成
             var version = new GitVersion.Version
             {
-                commitId = GetLastCommitId(false),
+                commitId = GitOperator.GetLastCommitId(false),
                 isValid = false,
                 allowUnknownVersionMatching = setting.allowUnknownVersionMatching,
             };
@@ -62,13 +59,13 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
 
             //バージョン情報の設定
-            var shortCommitId = GetLastCommitId(true);
-            version.tag = GetTagFromCommitId(version.commitId);
-            var isModified = CheckRepositoryChangesFromLastCommit();
+            var shortCommitId = GitOperator.GetLastCommitId(true);
+            version.tag = GitOperator.GetTagFromCommitId(version.commitId);
+            var isModified = GitOperator.CheckIfRepositoryIsChangedFromLastCommit();
             if (isModified)
             {
-                version.diffHash = GetHashOfChangesFromLastCommit();
-                if (version.tag == null)
+                version.diffHash = GitOperator.GetHashOfChangesFromLastCommit(false);
+                if (string.IsNullOrWhiteSpace(version.tag))
                 {
                     version.versionString = setting.versionStringFormatWithDiff;
                 }
@@ -82,7 +79,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
             else
             {
-                if (version.tag == null)
+                if (string.IsNullOrWhiteSpace(version.tag))
                 {
                     version.versionString = setting.versionStringFormat;
                 }
@@ -98,69 +95,6 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             version.versionString = Regex.Replace(version.versionString, "%{2}", "%");
             version.isValid = true;
             return version;
-        }
-
-        /// <summary>
-        /// Get current a last commit id of the current branch.
-        /// </summary>
-        /// <param name="shortVersion">Retruns short commit id if this is true.</param>
-        /// <returns>Commit ID. If there are no commits or git is not available, this function returns null.</returns>
-        public static string GetLastCommitId(bool shortVersion)
-        {
-            var commitId = ExecuteCommand("git log -n 1 --format=" + (shortVersion ? "%h" : "%H"))
-                .Replace("\n", string.Empty);
-            if (!string.IsNullOrEmpty(commitId))
-            {
-                return commitId;
-            }
-
-            Debug.LogError(
-                "Failed to get commit id. Check if git is installed and the directory of this project is initialized as a git repository.");
-            return null;
-        }
-
-        /// <summary>
-        /// Get current a tag of the specified commit.
-        /// </summary>
-        /// <param name="commitId">An id of the target commit</param>
-        /// <returns>Tag. If there are no tags or git is not available, this function returns null.</returns>
-        public static string GetTagFromCommitId(string commitId)
-        {
-            var tag = ExecuteCommand("git tag -l --contains " + commitId).Replace("\n", string.Empty);
-            return string.IsNullOrEmpty(tag) ? null : tag;
-        }
-
-        /// <summary>
-        /// Check if there are any changes in the repository from last commit.
-        /// </summary>
-        /// <returns>Returns true if there are changes.</returns>
-        public static bool CheckRepositoryChangesFromLastCommit()
-        {
-            return !string.IsNullOrEmpty(ExecuteCommand("git status --short").Replace("\n", string.Empty));
-        }
-
-        /// <summary>
-        /// Get a hash of the difference between current repository and last commit.
-        /// </summary>
-        /// <returns>Hash of diff between current repository and last commit</returns>
-        public static string GetHashOfChangesFromLastCommit()
-        {
-            // コミットしていない変更がある場合は最新コミットとの差分のハッシュを生成しバージョンに加える。
-            // 異なる編集の存在するものは違うバージョン、同じ状態のものは同じバージョンであると保証するため
-            var diff = ExecuteCommand("git add -N . ; git diff HEAD");
-            var data = Encoding.UTF8.GetBytes(diff);
-            // MD5ハッシュ生成。セキュリティは関係ないので、速度面からMD5を使う。
-            var algorithm = new MD5CryptoServiceProvider();
-            var bs = algorithm.ComputeHash(data);
-            algorithm.Clear();
-            // バイト型配列を16進数文字列に変換
-            var diffHash = new StringBuilder();
-            foreach (var b in bs)
-            {
-                diffHash.Append(b.ToString("x2"));
-            }
-
-            return diffHash.ToString();
         }
 
         /// <summary>
@@ -189,48 +123,6 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             Debug.Log(versionString.versionString);
         }
 
-        private static string ExecuteCommand(string command)
-        {
-            //Processオブジェクトを作成
-            var p = new System.Diagnostics.Process();
-            switch (Application.platform)
-            {
-                case RuntimePlatform.WindowsEditor:
-                    //ComSpec(cmd.exe)のパスを取得して、FileNameプロパティに指定
-                    p.StartInfo.FileName = Environment.GetEnvironmentVariable("ComSpec");
-                    p.StartInfo.Arguments = "/c " + command;
-                    break;
-                case RuntimePlatform.OSXEditor:
-                case RuntimePlatform.LinuxEditor:
-                    p.StartInfo.FileName = Environment.GetEnvironmentVariable("/bin/bash");
-                    p.StartInfo.Arguments = "-c \" " + command + "\"";
-                    break;
-                default:
-                    Debug.LogError("This function is not supported in this platform.");
-                    return null;
-            }
-
-            //出力を読み取れるようにする
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardInput = false;
-            //ウィンドウを表示しないようにする
-            p.StartInfo.CreateNoWindow = true;
-
-            //起動
-            p.Start();
-
-            //出力を読み取る
-            var results = p.StandardOutput.ReadToEnd();
-
-            //プロセス終了まで待機する
-            //WaitForExitはReadToEndの後である必要がある
-            //(親プロセス、子プロセスでブロック防止のため)
-            p.WaitForExit();
-            p.Close();
-            return results;
-        }
-
         /// <summary>
         /// Create gitignore for GitVersion if it doesn't exist.
         /// </summary>
@@ -243,9 +135,14 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 
             using (var fs = File.CreateText(_gitVersionAssetRootDirectory + ".gitignore"))
             {
-                fs.WriteLine("Resources/*");
-                fs.WriteLine("Resources.meta");
                 fs.WriteLine(".gitignore");
+                fs.WriteLine("");
+                fs.WriteLine("################");
+                fs.WriteLine("# UnityGitVersion");
+                fs.WriteLine("################");
+                fs.WriteLine("");
+                fs.WriteLine($"{_resourceRootDirectory}*");
+                fs.WriteLine($"{_resourceRootDirectory}Resources.meta");
             }
         }
 

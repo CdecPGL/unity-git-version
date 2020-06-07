@@ -62,10 +62,10 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// <summary>
         /// A path of directory used as resource asset path for GitVersion.
         /// </summary>
-        public const string resourceAssetDirectory = "PlanetaGameLabo/GitVersion/";
+        public const string resourceAssetDirectory = "PlanetaGameLabo/UnityGitVersion/";
 
         /// <summary>
-        /// Access to generated or loeaded version information.
+        /// Access to generated or loaded version information.
         /// </summary>
         public static Version version
         {
