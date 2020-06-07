@@ -14,10 +14,10 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 {
     public class GitVersionSetting : ScriptableObject
     {
-        [SerializeField] public string versionStringFormat = "Commit-%c";
-        [SerializeField] public string versionStringFormatWithDiff = "Commit-%c-diff-%d";
+        [SerializeField] public string versionStringFormat = "c-%c";
+        [SerializeField] public string versionStringFormatWithDiff = "c-%c-d-%d";
         [SerializeField] public string versionStringFormatWithTag = "%t";
-        [SerializeField] public string versionStringFormatWithTagAndDiff = "%t-diff-%d";
+        [SerializeField] public string versionStringFormatWithTagAndDiff = "%t-d-%d";
         [SerializeField] public bool allowUnknownVersionMatching;
     }
 }
