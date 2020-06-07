@@ -72,7 +72,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                     case "%C":
                         return commitId;
                     case "%t":
-                        if (!string.IsNullOrWhiteSpace(currentTag))
+                        if (string.IsNullOrWhiteSpace(currentTag))
                         {
                             Debug.LogWarning(
                                 $"{match.Value} is not available when there are no tags for the last commit.");
