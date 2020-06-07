@@ -123,29 +123,6 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             Debug.Log(versionString.versionString);
         }
 
-        /// <summary>
-        /// Create gitignore for GitVersion if it doesn't exist.
-        /// </summary>
-        private static void CreateGitIgnore()
-        {
-            if (File.Exists(_gitVersionAssetRootDirectory + ".gitignore"))
-            {
-                return;
-            }
-
-            using (var fs = File.CreateText(_gitVersionAssetRootDirectory + ".gitignore"))
-            {
-                fs.WriteLine(".gitignore");
-                fs.WriteLine("");
-                fs.WriteLine("################");
-                fs.WriteLine("# UnityGitVersion");
-                fs.WriteLine("################");
-                fs.WriteLine("");
-                fs.WriteLine($"{_resourceRootDirectory}*");
-                fs.WriteLine($"{_resourceRootDirectory}Resources.meta");
-            }
-        }
-
         private static void CreateVersionHolderAsset()
         {
             //内部バージョン情報アセットを作成
@@ -164,8 +141,6 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             //新しいアセットを保存
             AssetDatabase.CreateAsset(versionHolder, versionHolderPath);
             AssetDatabase.SaveAssets();
-            //gitignoreが存在しなかったら保存する
-            CreateGitIgnore();
         }
 
         [InitializeOnLoadMethod]
