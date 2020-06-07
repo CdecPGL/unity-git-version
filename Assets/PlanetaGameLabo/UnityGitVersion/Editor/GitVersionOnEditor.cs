@@ -19,7 +19,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
     /// <summary>
     /// A class including editor extension etc.
     /// </summary>
-    public class GitVersionOnEditor : IPreprocessBuildWithReport
+    internal class GitVersionOnEditor : IPreprocessBuildWithReport
     {
         public const string resourceDirectory = _resourceRootDirectory + GitVersion.resourceAssetDirectory;
         public const string versionHolderPath = resourceDirectory + GitVersionHolder.assetName + ".asset";
@@ -48,7 +48,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             if (!GitOperator.CheckIfGitIsAvailable())
             {
                 Debug.LogError("Git is not available. Please check if git is installed to your computer.");
-                return GitVersion.Version.GetInvalidVersion(setting.allowUnknownVersionMatching);
+                return GitVersion.Version.GetInvalidVersion();
             }
 
             // 各種情報の取得
@@ -56,7 +56,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             if (string.IsNullOrWhiteSpace(commitId))
             {
                 Debug.LogError("Failed to generate version from git because commit ID is not available.");
-                return GitVersion.Version.GetInvalidVersion(setting.allowUnknownVersionMatching);
+                return GitVersion.Version.GetInvalidVersion();
             }
 
             var isModified = GitOperator.CheckIfRepositoryIsChangedFromLastCommit();
@@ -133,8 +133,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
 
             versionString = Regex.Replace(versionString, "%.", MatchEvaluator);
-            return new GitVersion.Version(versionString, currentTag, commitId, diffHash,
-                setting.allowUnknownVersionMatching);
+            return new GitVersion.Version(versionString, currentTag, commitId, diffHash);
         }
 
         /// <summary>

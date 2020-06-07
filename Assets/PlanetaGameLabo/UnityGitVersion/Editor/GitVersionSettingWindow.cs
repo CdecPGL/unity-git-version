@@ -15,7 +15,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
     /// <summary>
     /// Editor window to set configurations about GitVersion.
     /// </summary>
-    public class GitVersionSettingWindow : EditorWindow
+    internal class GitVersionSettingWindow : EditorWindow
     {
         private GitVersionSetting _gitVersionSetting;
         private bool _isAssetCreated;
@@ -70,8 +70,6 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             _gitVersionSetting.versionStringFormatWithTagAndDiff = EditorGUILayout.TextField("With Tag and Diff",
                 _gitVersionSetting.versionStringFormatWithTagAndDiff);
             EditorGUILayout.LabelField("Others", EditorStyles.boldLabel);
-            _gitVersionSetting.allowUnknownVersionMatching = EditorGUILayout.Toggle("AllowUnknownVersionMatching",
-                _gitVersionSetting.allowUnknownVersionMatching);
         }
     }
 }

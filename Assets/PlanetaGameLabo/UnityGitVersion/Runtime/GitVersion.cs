@@ -53,38 +53,25 @@ namespace PlanetaGameLabo.UnityGitVersion
             /// </summary>
             public string diffHash => _diffHash;
 
-            /// <summary>
-            /// Consider version is matched when version is unknown if this is true.
-            /// </summary>
-            public bool allowUnknownVersionMatching => _allowUnknownVersionMatching;
-
-            public Version(string versionString, string tag, string commitId, string diffHash,
-                bool allowUnknownVersionMatching, bool isValid = true)
+            public Version(string versionString, string tag, string commitId, string diffHash, bool isValid = true)
             {
                 _versionString = versionString;
                 _isValid = isValid;
                 _tag = tag;
                 _commitId = commitId;
                 _diffHash = diffHash;
-                _allowUnknownVersionMatching = allowUnknownVersionMatching;
             }
 
-            public static Version GetInvalidVersion(bool allowUnknownVersionMatching)
+            public static Version GetInvalidVersion()
             {
-                return new Version("Unknown Version", "", "", "", allowUnknownVersionMatching, false);
+                return new Version("Unknown Version", "", "", "", false);
             }
 
             [SerializeField] private string _versionString;
-
             [SerializeField] private bool _isValid;
-
             [SerializeField] private string _tag;
-
             [SerializeField] private string _commitId;
-
             [SerializeField] private string _diffHash;
-
-            [SerializeField] private bool _allowUnknownVersionMatching;
         }
 
         /// <summary>
@@ -103,22 +90,13 @@ namespace PlanetaGameLabo.UnityGitVersion
                 {
                     return isVersionValid
                         ? _gitVersionHolder.version
-                        : Version.GetInvalidVersion(false);
+                        : Version.GetInvalidVersion();
                 }
 
-                //バージョンアセットをロードする
-                _gitVersionHolder = Resources.Load<GitVersionHolder>(GitVersionHolder.assetPath);
-                if (!_gitVersionHolder)
-                {
-                    Debug.LogError(
-                        "Failed to get a version of GitVersion. Version generation may not be completed in building.");
-                }
-
-                _isInitialized = true;
-
+                Initialize();
                 return isVersionValid
                     ? _gitVersionHolder.version
-                    : Version.GetInvalidVersion(false);
+                    : Version.GetInvalidVersion();
             }
         }
 
@@ -130,10 +108,12 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// <summary>
         /// Check if my version matches to a parameter.
         /// </summary>
-        /// <param name="targetVersion"></param>
+        /// <param name="targetVersion">A version information to check.</param>
+        /// <param name="allowUnknownVersionMatching">Consider version is matched when version is unknown if this is true</param>
         /// <returns>True if version matches.</returns>
-        public static bool CheckIfVersionMatch(Version targetVersion)
+        public static bool CheckIfVersionMatch(Version targetVersion, bool allowUnknownVersionMatching)
         {
+            Initialize();
             if (!isVersionValid)
             {
                 return false;
@@ -141,7 +121,7 @@ namespace PlanetaGameLabo.UnityGitVersion
 
             if (!version.isValid || !targetVersion.isValid)
             {
-                return version.allowUnknownVersionMatching;
+                return allowUnknownVersionMatching;
             }
 
             if (!string.IsNullOrEmpty(version.tag) && version.tag == targetVersion.tag)
@@ -159,5 +139,18 @@ namespace PlanetaGameLabo.UnityGitVersion
 
         private static bool _isInitialized;
         private static GitVersionHolder _gitVersionHolder;
+
+        private static void Initialize()
+        {
+            //バージョンアセットをロードする
+            _gitVersionHolder = Resources.Load<GitVersionHolder>(GitVersionHolder.assetPath);
+            if (!_gitVersionHolder)
+            {
+                Debug.LogError(
+                    "Failed to get a version string by UnityGitVersion. Version generation may not be completed in building.");
+            }
+
+            _isInitialized = true;
+        }
     }
 }
