@@ -6,7 +6,7 @@
 
 [日本語README](README_jp.md)
 
-An asset to autonatically generate a version string with Git like `v1.0.0-commit-abcd`.
+An asset to autonatically generate a version string with Git like `v1.0.0-commit-abcdefg`.
 This asset can be used for the following purposes.
 
 - Display game version
@@ -155,9 +155,9 @@ Below are examples when commit ID is `1c8b748fe43d75bf76a9be505f96102ba2df19d7` 
 
 |Format|Generated Version String|
 |:---|:---|
-|`%t-%d`|`v1.0.0-ad5a`|
-|`%t-commit-%c-%d`|`v1.0.0-commit-1c8b748-ad5a`|
-|`%x-%d`|`v1.0.0-ad5a`|
+|`%t-%d`|`v1.0.0-ad5add9`|
+|`%t-commit-%c-%d`|`v1.0.0-commit-1c8b748-ad5add9`|
+|`%x-%d`|`v1.0.0-ad5add9`|
 
 ## Others
 
