@@ -111,7 +111,7 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// <param name="targetVersion">A version information to check.</param>
         /// <param name="allowUnknownVersionMatching">Consider version is matched when version is unknown if this is true</param>
         /// <returns>True if version matches.</returns>
-        public static bool CheckIfVersionMatch(Version targetVersion, bool allowUnknownVersionMatching)
+        public static bool CheckIfVersionMatch(Version targetVersion, bool allowUnknownVersionMatching = false)
         {
             Initialize();
             if (!isVersionValid)
