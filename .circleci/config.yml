@@ -1,0 +1,93 @@
+version: 2.1
+
+executors:
+  unity:
+    working_directory: ~/workspace
+    docker:
+      - image: gableroux/unity3d:2019.3.13f1
+  go:
+    working_directory: ~/workspace
+    docker:
+      - image: circleci/golang
+
+jobs:
+  build:
+    executor: unity
+    steps:
+      - checkout
+      - run:
+          name: Prepare license file
+          command: |
+            mkdir -p /root/.cache/unity3d /root/.local/share/unity3d/Unity/
+            openssl aes-256-cbc -d -pbkdf2 -in AuthenticationFiles/Unity_v2019.x.ulf-cipher -out Unity_v2019.x.ulf -k $UNITY_LICENSE_FILE_ENCRYPT_KEY
+            cp Unity_v2019.x.ulf /root/.local/share/unity3d/Unity/Unity_lic.ulf
+      - run:
+          name: Build unitypackage
+          command: |
+            /opt/Unity/Editor/Unity \
+              -exportPackage Assets/PlanetaGameLabo UnityGitVersion.unitypackage \
+              -ProjectPath ./ \
+              -batchmode -nographics -logfile unity_build.log -quit
+      - run:
+          name: Create artifact
+          command: |
+            mkdir -p artifacts
+            cp UnityGitVersion.unitypackage artifacts
+      - store_artifacts:
+          path: artifacts/UnityGitVersion.unitypackage
+      - persist_to_workspace:
+          root: "."
+          paths:
+            - artifacts/UnityGitVersion.unitypackage
+
+  # test:
+  #   executor: unity
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Not Implemented
+  #         command: echo Not Implemented
+
+  release:
+    executor: go
+    steps:
+      - checkout
+      - attach_workspace:
+          at: "."
+      - run:
+          name: Install github-release
+          command: |
+            go get github.com/tcnksm/ghr
+            export PATH="${PATH};/go/bin"
+      - run:
+          name: Create release and upload artifacts
+          command: |
+            if [ `git describe | grep -c "^v\0\..*"` -eq 0 ]; then ADDITIONAL_OPTIONS="" ; else ADDITIONAL_OPTIONS="-prerelease"; fi
+            ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -n ${CIRCLE_TAG} ${ADDITIONAL_OPTIONS} ${CIRCLE_TAG} artifacts/
+
+workflows:
+  build_test_and_release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+
+      # - test:
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         only: master
+
+      - release:
+          requires:
+            - build
+            # - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
