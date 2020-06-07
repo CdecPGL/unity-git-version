@@ -16,7 +16,7 @@ namespace PlanetaGameLabo.UnityGitVersion
     /// <summary>
     /// An utility class to get a version string which is generated from commit id and tags of git.
     /// </summary>
-    public class GitVersion
+    public static class GitVersion
     {
         /// <summary>
         /// Version information.
@@ -28,35 +28,63 @@ namespace PlanetaGameLabo.UnityGitVersion
             /// A string which represents version.
             /// This string is based on version string format in setting.
             /// </summary>
-            public string versionString;
+            public string versionString => _versionString;
 
             /// <summary>
             /// True if version is generated correctly.
             /// </summary>
-            public bool isValid;
+            public bool isValid => _isValid;
 
             /// <summary>
             /// A tag of last commit from git.
             /// If there is no tag in last commit, this field is null.
             /// </summary>
-            public string tag;
+            public string tag => _tag;
 
             /// <summary>
             /// A last commit id from git.
             /// If commit id is not available, this field is null.
             /// </summary>
-            public string commitId;
+            public string commitId => _commitId;
 
             /// <summary>
             /// A hash of difference between last commit and current state.
             /// If there are no changes from last commit, this field is null.
             /// </summary>
-            public string diffHash;
+            public string diffHash => _diffHash;
 
             /// <summary>
             /// Consider version is matched when version is unknown if this is true.
             /// </summary>
-            public bool allowUnknownVersionMatching;
+            public bool allowUnknownVersionMatching => _allowUnknownVersionMatching;
+
+            public Version(string versionString, string tag, string commitId, string diffHash,
+                bool allowUnknownVersionMatching, bool isValid = true)
+            {
+                _versionString = versionString;
+                _isValid = isValid;
+                _tag = tag;
+                _commitId = commitId;
+                _diffHash = diffHash;
+                _allowUnknownVersionMatching = allowUnknownVersionMatching;
+            }
+
+            public static Version GetInvalidVersion(bool allowUnknownVersionMatching)
+            {
+                return new Version("Unknown Version", "", "", "", allowUnknownVersionMatching, false);
+            }
+
+            [SerializeField] private string _versionString;
+
+            [SerializeField] private bool _isValid;
+
+            [SerializeField] private string _tag;
+
+            [SerializeField] private string _commitId;
+
+            [SerializeField] private string _diffHash;
+
+            [SerializeField] private bool _allowUnknownVersionMatching;
         }
 
         /// <summary>
@@ -73,9 +101,9 @@ namespace PlanetaGameLabo.UnityGitVersion
             {
                 if (_isInitialized || _gitVersionHolder)
                 {
-                    return isValid
+                    return isVersionValid
                         ? _gitVersionHolder.version
-                        : new Version {versionString = "Unknown Version", isValid = false};
+                        : Version.GetInvalidVersion(false);
                 }
 
                 //バージョンアセットをロードする
@@ -88,16 +116,16 @@ namespace PlanetaGameLabo.UnityGitVersion
 
                 _isInitialized = true;
 
-                return isValid
+                return isVersionValid
                     ? _gitVersionHolder.version
-                    : new Version {versionString = "Unknown Version", isValid = false};
+                    : Version.GetInvalidVersion(false);
             }
         }
 
         /// <summary>
-        /// Return true if version information is succesfully generated or loaded.
+        /// True if version information is successfully generated or loaded.
         /// </summary>
-        public static bool isValid => _gitVersionHolder != null;
+        public static bool isVersionValid => _gitVersionHolder != null;
 
         /// <summary>
         /// Check if my version matches to a parameter.
@@ -106,7 +134,7 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// <returns>True if version matches.</returns>
         public static bool CheckIfVersionMatch(Version targetVersion)
         {
-            if (!isValid)
+            if (!isVersionValid)
             {
                 return false;
             }

@@ -30,7 +30,6 @@ namespace PlanetaGameLabo.UnityGitVersion
         /// </summary>
         public const string assetPath = GitVersion.resourceAssetDirectory + assetName;
 
-        [SerializeField] public GitVersion.Version version = new GitVersion.Version
-            {versionString = "Unknown Version", isValid = false};
+        [SerializeField] public GitVersion.Version version = GitVersion.Version.GetInvalidVersion(false);
     }
 }

@@ -44,57 +44,95 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                 setting = ScriptableObject.CreateInstance<GitVersionSetting>();
             }
 
-            //バージョンの生成
-            var version = new GitVersion.Version
+            // gitが利用不可能なら無効なバージョンを返す
+            if (!GitOperator.CheckIfGitIsAvailable())
             {
-                commitId = GitOperator.GetLastCommitId(false),
-                isValid = false,
-                allowUnknownVersionMatching = setting.allowUnknownVersionMatching,
-            };
-            //Git操作に失敗
-            if (version.commitId == null)
+                Debug.LogError("Git is not available. Please check if git is installed to your computer.");
+                return GitVersion.Version.GetInvalidVersion(setting.allowUnknownVersionMatching);
+            }
+
+            // 各種情報の取得
+            var commitId = GitOperator.GetLastCommitId(false);
+            if (string.IsNullOrWhiteSpace(commitId))
             {
-                Debug.LogError("Failed to generate version from git.");
-                return version;
+                Debug.LogError("Failed to generate version from git because commit ID is not available.");
+                return GitVersion.Version.GetInvalidVersion(setting.allowUnknownVersionMatching);
+            }
+
+            var isModified = GitOperator.CheckIfRepositoryIsChangedFromLastCommit();
+            var currentTag = GitOperator.GetTagFromCommitId(commitId);
+            var diffHash = isModified ? GitOperator.GetHashOfChangesFromLastCommit(false) : "";
+
+            string MatchEvaluator(Match match)
+            {
+                switch (match.Value)
+                {
+                    case "%c":
+                        return GitOperator.GetLastCommitId(true);
+                    case "%C":
+                        return commitId;
+                    case "%t":
+                        if (!string.IsNullOrWhiteSpace(currentTag))
+                        {
+                            Debug.LogWarning(
+                                $"{match.Value} is not available when there are no tags for the last commit.");
+                            return "";
+                        }
+
+                        return currentTag;
+                    case "%d":
+                        if (!isModified)
+                        {
+                            Debug.LogWarning(
+                                $"{match.Value} is not available when there are no changes from the last commit.");
+                            return "";
+                        }
+
+                        return GitOperator.GetHashOfChangesFromLastCommit(true);
+                    case "%D":
+                        if (!isModified)
+                        {
+                            Debug.LogWarning(
+                                $"{match.Value} is not available when there are no changes from the last commit.");
+                            return "";
+                        }
+
+                        return diffHash;
+                    case "%%":
+                        return "%";
+                    default:
+                        return match.Value;
+                }
             }
 
             //バージョン情報の設定
-            var shortCommitId = GitOperator.GetLastCommitId(true);
-            version.tag = GitOperator.GetTagFromCommitId(version.commitId);
-            var isModified = GitOperator.CheckIfRepositoryIsChangedFromLastCommit();
+            string versionString;
             if (isModified)
             {
-                version.diffHash = GitOperator.GetHashOfChangesFromLastCommit(false);
-                if (string.IsNullOrWhiteSpace(version.tag))
+                if (string.IsNullOrWhiteSpace(currentTag))
                 {
-                    version.versionString = setting.versionStringFormatWithDiff;
+                    versionString = setting.versionStringFormatWithDiff;
                 }
                 else
                 {
-                    version.versionString = setting.versionStringFormatWithTagAndDiff;
-                    version.versionString = Regex.Replace(version.versionString, "%{1}t", version.tag);
+                    versionString = setting.versionStringFormatWithTagAndDiff;
                 }
-
-                version.versionString = Regex.Replace(version.versionString, "%{1}d", version.diffHash);
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(version.tag))
+                if (string.IsNullOrWhiteSpace(currentTag))
                 {
-                    version.versionString = setting.versionStringFormat;
+                    versionString = setting.versionStringFormat;
                 }
                 else
                 {
-                    version.versionString = setting.versionStringFormatWithTag;
-                    version.versionString = Regex.Replace(version.versionString, "%{1}t", version.tag);
+                    versionString = setting.versionStringFormatWithTag;
                 }
             }
 
-            version.versionString = Regex.Replace(version.versionString, "%{1}c", shortCommitId);
-            version.versionString = Regex.Replace(version.versionString, "%{1}C", version.commitId);
-            version.versionString = Regex.Replace(version.versionString, "%{2}", "%");
-            version.isValid = true;
-            return version;
+            versionString = Regex.Replace(versionString, "%.", MatchEvaluator);
+            return new GitVersion.Version(versionString, currentTag, commitId, diffHash,
+                setting.allowUnknownVersionMatching);
         }
 
         /// <summary>
