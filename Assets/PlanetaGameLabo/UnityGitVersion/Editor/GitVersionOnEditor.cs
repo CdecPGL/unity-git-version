@@ -98,6 +98,8 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                         }
 
                         return diffHash;
+                    case "%x":
+                        return GitOperator.GetDescription();
                     case "%%":
                         return "%";
                     default:

@@ -65,6 +65,7 @@ In version string format, spesific strings are replaced as below.
 - %t: Tag of last commit
 - %d: Short hash of difference between last commit and current state
 - %D: Hash of difference between last commit and current state
+- %x: A result of `git describe`
 - %%: %
 
 4 formats are used due to status of the repository.
@@ -73,25 +74,25 @@ In version string format, spesific strings are replaced as below.
 
 This is used when there are no changes from last commit and no tag.
 
-%c, %C are available.
+%c, %C, %x are available.
 
 #### With Diff
 
 This is used when there are some changes from last commit and no tag.
 
-%c, %C, %d, %D are available.
+%c, %C, %d, %D, %x are available.
 
 #### With Tag
 
 This is used when there are no changes from last commit and a tag.
 
-%c, %C, %t are available.
+%c, %C, %t, %x are available.
 
 #### With Tag and Diff
 
 This is used when there are some changes from last commit and a tag.
 
-%c, %C, %t, %d, %D are available.
+%c, %C, %t, %d, %D, %x are available.
 
 ### AllowUnknownVersionMatching
 

@@ -123,6 +123,23 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
 
+        /// <summary>
+        /// Get a result of git describe
+        /// </summary>
+        /// <returns>A result of git describe</returns>
+        public static string GetDescription()
+        {
+            try
+            {
+                return ExecuteGitCommand("describe").Replace("\n", string.Empty);
+            }
+            catch (GitCommandExecutionError e)
+            {
+                Debug.LogException(e);
+                return "";
+            }
+        }
+
         private static string ExecuteGitCommand(string arguments)
         {
             try
