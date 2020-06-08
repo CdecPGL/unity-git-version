@@ -1,8 +1,0 @@
-####################
-# UnityGitVersion
-####################
-
-Resources/*
-Resources.meta
-Editor/UnityGitVersionSetting.asset
-Editor/UnityGitVersionSetting.asset.meta
