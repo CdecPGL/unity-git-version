@@ -11,6 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PlanetaGameLabo.UnityGitVersion.Editor
@@ -143,11 +144,13 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
 
-        private static string ExecuteGitCommand(string arguments)
+        private static string ExecuteGitCommand(string arguments, float timeOutSeconds = 10)
         {
             try
             {
-                var (standardOutput, standardError, exitCode) = ExecuteCommand($"git {arguments}");
+                // ページ送りによるユーザー入力待機を発生させないために--no-pagerオプションを使用
+                var (standardOutput, standardError, exitCode) =
+                    ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
                 if (exitCode != 0)
                 {
                     throw new GitCommandExecutionError(arguments, exitCode, standardError);
@@ -161,7 +164,8 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
 
-        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command)
+        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command,
+            float timeOutSeconds = 10)
         {
             //Processオブジェクトを作成
             using (var process = new System.Diagnostics.Process())
@@ -203,15 +207,27 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                 //起動
                 process.Start();
 
-                //出力を読み取る
-                var standardOutput = process.StandardOutput.ReadToEnd();
-                var standardError = process.StandardError.ReadToEnd();
+                // 出力を読み取る
+                // 出力ストリームのバッファがいっぱいになりブロックされるのを防ぐため、非同期で出力ストリームを読み込みながらコマンドの終了を待つ
+                using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
+                using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync()))
+                {
+                    //プロセス終了まで待機する
+                    if (!process.WaitForExit((int) (timeOutSeconds * 1000)))
+                    {
+                        // タイムアウトになった場合はプロセスを中断して終了
+                        process.Kill();
+                        process.WaitForExit();
+                        standardOutputTask.Wait();
+                        standardErrorTask.Wait();
+                        throw new CommandExecutionErrorException(command, "Timeout");
+                    }
 
-                //プロセス終了まで待機する
-                //WaitForExitはReadToEndの後である必要がある
-                //(親プロセス、子プロセスでブロック防止のため)
-                process.WaitForExit();
-                return (standardOutput.Replace("\r\n", "\n"), standardError.Replace("\r\n", "\n"), process.ExitCode);
+                    standardOutputTask.Wait();
+                    standardErrorTask.Wait();
+                    return (standardOutputTask.Result.Replace("\r\n", "\n"),
+                        standardErrorTask.Result.Replace("\r\n", "\n"), process.ExitCode);
+                }
             }
         }
 
@@ -232,7 +248,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
     }
-    
+
     /// <summary>
     /// An exception class for git command execution error.
     /// </summary>
