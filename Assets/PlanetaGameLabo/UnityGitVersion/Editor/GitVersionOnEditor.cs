@@ -223,8 +223,8 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                 fs.WriteLine("################");
                 fs.WriteLine("");
                 fs.WriteLine(".gitignore");
-                fs.WriteLine($"{_resourceRootDirectory}*");
-                fs.WriteLine($"{_resourceRootDirectory}Resources.meta");
+                fs.WriteLine("Resources/*");
+                fs.WriteLine("Resources.meta");
             }
         }
 
