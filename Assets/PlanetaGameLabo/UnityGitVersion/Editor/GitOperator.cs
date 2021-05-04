@@ -148,9 +148,8 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             try
             {
-                // ページ送りによるユーザー入力待機を発生させないために--no-pagerオプションを使用
-                var (standardOutput, standardError, exitCode) =
-                    ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
+	            // ページ送りによるユーザー入力待機を発生させないために--no-pagerオプションを使用
+                var (standardOutput, standardError, exitCode) = ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
                 if (exitCode != 0)
                 {
                     throw new GitCommandExecutionError(arguments, exitCode, standardError);
@@ -164,70 +163,63 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
 
-        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command,
-            float timeOutSeconds = 10)
+        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command, float timeOutSeconds = 10)
         {
             //Processオブジェクトを作成
-            using (var process = new System.Diagnostics.Process())
-            {
-                switch (Application.platform)
-                {
-                    case RuntimePlatform.WindowsEditor:
-                        //ComSpec(cmd.exe)のパスを取得して、FileNameプロパティに指定
-                        var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
-                        if (cmdPath == null)
-                        {
-                            throw new CommandExecutionErrorException(command,
-                                "Command Prompt is not found because environment variable \"ComSpec\" doesn'T exist.");
-                        }
+            using (var process = new System.Diagnostics.Process()) {
+	            switch (Application.platform) {
+		            case RuntimePlatform.WindowsEditor:
+			            //ComSpec(cmd.exe)のパスを取得して、FileNameプロパティに指定
+			            var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
+			            if (cmdPath == null) {
+				            throw new CommandExecutionErrorException(command,
+					            "Command Prompt is not found because environment variable \"ComSpec\" doesn'T exist.");
+			            }
 
-                        process.StartInfo.FileName = cmdPath;
-                        process.StartInfo.Arguments = "/c " + command;
-                        break;
-                    case RuntimePlatform.OSXEditor:
-                    case RuntimePlatform.LinuxEditor:
-                        process.StartInfo.FileName = "/bin/bash";
-                        process.StartInfo.Arguments = "-c \" " + command + "\"";
-                        break;
-                    default:
-                    {
-                        throw new CommandExecutionErrorException(command,
-                            $"Command execution is not supported in current platform ({Application.platform}).");
-                    }
-                }
+			            process.StartInfo.FileName = cmdPath;
+			            process.StartInfo.Arguments = "/c " + command;
+			            break;
+		            case RuntimePlatform.OSXEditor:
+		            case RuntimePlatform.LinuxEditor:
+			            process.StartInfo.FileName = "/bin/bash";
+			            process.StartInfo.Arguments = "-c \" " + command + "\"";
+			            break;
+		            default: {
+			            throw new CommandExecutionErrorException(command,
+				            $"Command execution is not supported in current platform ({Application.platform}).");
+		            }
+	            }
 
-                //出力を読み取れるようにする
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.RedirectStandardInput = false;
-                //ウィンドウを表示しないようにする
-                process.StartInfo.CreateNoWindow = true;
+	            //出力を読み取れるようにする
+	            process.StartInfo.UseShellExecute = false;
+	            process.StartInfo.RedirectStandardOutput = true;
+	            process.StartInfo.RedirectStandardError = true;
+	            process.StartInfo.RedirectStandardInput = false;
+	            //ウィンドウを表示しないようにする
+	            process.StartInfo.CreateNoWindow = true;
 
-                //起動
-                process.Start();
+	            //起動
+	            process.Start();
 
-                // 出力を読み取る
-                // 出力ストリームのバッファがいっぱいになりブロックされるのを防ぐため、非同期で出力ストリームを読み込みながらコマンドの終了を待つ
-                using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
-                using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync()))
-                {
-                    //プロセス終了まで待機する
-                    if (!process.WaitForExit((int) (timeOutSeconds * 1000)))
-                    {
-                        // タイムアウトになった場合はプロセスを中断して終了
-                        process.Kill();
-                        process.WaitForExit();
-                        standardOutputTask.Wait();
-                        standardErrorTask.Wait();
-                        throw new CommandExecutionErrorException(command, "Timeout");
-                    }
+	            // 出力を読み取る
+	            // 出力ストリームのバッファがいっぱいになりブロックされるのを防ぐため、非同期で出力ストリームを読み込みながらコマンドの終了を待つ
+	            using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
+	            using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync())){
+		            //プロセス終了まで待機する
+		            if (!process.WaitForExit((int)(timeOutSeconds * 1000))) {
+			            // タイムアウトになった場合はプロセスを中断して終了
+			            process.Kill();
+			            process.WaitForExit();
+			            standardOutputTask.Wait();
+			            standardErrorTask.Wait();
+			            throw new CommandExecutionErrorException(command, "Timeout");
+		            }
 
-                    standardOutputTask.Wait();
-                    standardErrorTask.Wait();
-                    return (standardOutputTask.Result.Replace("\r\n", "\n"),
-                        standardErrorTask.Result.Replace("\r\n", "\n"), process.ExitCode);
-                }
+		            standardOutputTask.Wait();
+		            standardErrorTask.Wait();
+		            return (standardOutputTask.Result.Replace("\r\n", "\n"),
+			            standardErrorTask.Result.Replace("\r\n", "\n"), process.ExitCode);
+	            }
             }
         }
 
@@ -248,7 +240,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
     }
-
+    
     /// <summary>
     /// An exception class for git command execution error.
     /// </summary>
