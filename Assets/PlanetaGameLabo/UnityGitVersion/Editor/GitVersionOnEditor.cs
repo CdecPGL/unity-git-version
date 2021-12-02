@@ -102,7 +102,9 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 
                         return diffHash;
                     case "%x":
-                        return GitOperator.GetDescription();
+                        return GitOperator.GetDescription(false);
+                    case "%y":
+                        return GitOperator.GetDescription(true);
                     case "%%":
                         return "%";
                     default:

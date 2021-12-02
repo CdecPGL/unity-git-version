@@ -131,11 +131,12 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         /// Get a result of git describe
         /// </summary>
         /// <returns>A result of git describe</returns>
-        public static string GetDescription()
+        public static string GetDescription(bool enableLightweightTagMatch)
         {
             try
             {
-                return ExecuteGitCommand("describe").Replace("\n", string.Empty);
+                return ExecuteGitCommand( enableLightweightTagMatch ? "describe --tags" : "describe")
+                    .Replace("\n", string.Empty);
             }
             catch (GitCommandExecutionError e)
             {

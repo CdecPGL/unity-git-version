@@ -85,12 +85,13 @@ In version string format, spesific strings are replaced as below.
 
 |Special String|Replace String|
 |:---|:---|
-|%c|Short commit ID of last commit|
-|%C|Commit ID of last commit|
-|%t|Tag of last commit|
-|%d|Short hash of difference between last commit and current state|
-|%D|Hash of difference between last commit and current state|
-|%x|A result of [git-describe](https://git-scm.com/docs/git-describe)|
+|%c|A short commit ID of the last commit|
+|%C|A commit ID of the last commit|
+|%t|A tag of the last commit|
+|%d|A short hash of difference between the last commit and current state|
+|%D|A hash of difference between the last commit and current state|
+|%x|A result of [git-describe](https://git-scm.com/docs/git-describe).|
+|%y|A result of [git-describe](https://git-scm.com/docs/git-describe) with `--tags` option, which means lightweight matching is enabled.|
 |%%|%|
 
 There are 4 kinds of formats for each status of the repository.
@@ -99,7 +100,7 @@ There are 4 kinds of formats for each status of the repository.
 
 This is used when there are no changes from last commit and no tag to the last commit.
 
-`%c`, `%C`, `%x` are available.
+`%c`, `%C`, `%x`, `%y` are available.
 
 ##### Example
 
@@ -115,7 +116,7 @@ Below are examples when commit ID is `1c8b748fe43d75bf76a9be505f96102ba2df19d7` 
 
 This is used when there are some changes from last commit and no tag to the last commit.
 
-`%c`, `%C`, `%d`, `%D`, `%x` are available.
+`%c`, `%C`, `%d`, `%D`, `%x`, `%y` are available.
 
 ##### Example
 
@@ -131,7 +132,7 @@ Below are examples when commit ID is `1c8b748fe43d75bf76a9be505f96102ba2df19d7` 
 
 This is used when there are no changes from last commit and a tag to the last commit.
 
-`%c`, `%C`, `%t`, `%x` are available.
+`%c`, `%C`, `%t`, `%x`, `%y` are available.
 
 ##### Example
 
@@ -147,7 +148,7 @@ Below are examples when commit ID is `1c8b748fe43d75bf76a9be505f96102ba2df19d7` 
 
 This is used when there are some changes from last commit and a tag to the last commit.
 
-`%c`, `%C`, `%t`, `%d`, `%D`, `%x` are available.
+`%c`, `%C`, `%t`, `%d`, `%D`, `%x`, `%y` are available.
 
 ##### Example
 
