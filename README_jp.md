@@ -178,6 +178,18 @@ UnityGitVersionにより生成されるバージョン文字列のフォーマ�
 
 `PlanetaGameLabo.UnityGitVersion.GitOperator`クラスを使用して、コミットIDを取得するなどの操作を実行できます。
 
+## コントリビューション
+
+バグを見つけたり新しい機能の提案があったりする場合は、[Issue](https://github.com/CdecPGL/unity-git-version/issues)を発行するか[Pull Request](https://github.com/CdecPGL/unity-git-version/pulls)を出してください。
+
+プルリクエストは以下の手順で作成できます。
+
+1. [フォーク](https://github.com/CdecPGL/unity-git-version/fork)する
+1. featureブランチを作成する
+1. 加えた変更をコミットする
+1. コミットをプッシュする
+1. プルリクエストを作成する
+
 ## ライセンス
 
 本リポジトリに含まれるコードは、[MITライセンス](LICENSE)に基づきます。

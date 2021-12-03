@@ -181,6 +181,19 @@ The reason why we use not only `git diff HEAD` but also `git status` is that the
 
 You can do operation like getting commit ID by using `PlanetaGameLabo.UnityGitVersion.GitOperator` class.
 
+## Contribution
+
+Please submit [issues](https://github.com/CdecPGL/unity-git-version/issues) or create [Pull Requests](https://github.com/CdecPGL/unity-git-version/pulls) if you find bugs or want to propose new features.
+
+You can create pull requests by below steps.
+
+1. [Fork](https://github.com/CdecPGL/unity-git-version/fork)
+1. Create a feature branch
+1. Commit your changes
+1. Rebase your local changes against the master branch
+1. Push commits
+1. Create new Pull Request
+
 ## License
 
 The source codes in this repository are based on [the MIT Lisence](LICENSE).
