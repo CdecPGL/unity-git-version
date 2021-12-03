@@ -1,7 +1,7 @@
 ﻿/*
 The MIT License (MIT)
 
-Copyright (c) 2018-2020 Cdec
+Copyright (c) 2018-2021 Cdec
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
@@ -115,16 +115,17 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             {
                 // Get a string representing difference between worktree and the last commit.
                 var diff = ExecuteGitCommand("diff HEAD");
-                
+
                 // Add file names and last update datetime of untracked file to difference string because untracked files (newly added files) are not included in the result of "git diff" command.
                 var changeResult = ExecuteGitCommand("status -s -uall --porcelain");
                 var changes = changeResult.Split('\n');
-                var untrackedFilePaths = changes.Where(c => c.StartsWith("??")).Select(c=>c.TrimStart('?', ' '));
+                var untrackedFilePaths = changes.Where(c => c.StartsWith("??")).Select(c => c.TrimStart('?', ' '));
                 // To ensure consistency among machines with different locales, we use UTC as timezone and ISO datetime string. 
-                var untrackedFilePathsWithUpdateTimes = untrackedFilePaths.Select(u => $"{u}@{new FileInfo(u).LastWriteTimeUtc.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'")}");
-                
+                var untrackedFilePathsWithUpdateTimes = untrackedFilePaths.Select(u =>
+                    $"{u}@{new FileInfo(u).LastWriteTimeUtc:yyyy-MM-dd'T'HH:mm:ss'Z'}");
+
                 diff += string.Join("\n", untrackedFilePathsWithUpdateTimes);
-                
+
                 // Generate SHA1 hash, which is used in Git
                 var hash = GetHashString<SHA1CryptoServiceProvider>(diff);
                 // Make hash length 7 which is same as the length of short hash in Git if short flag is enabled
@@ -145,7 +146,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             try
             {
-                return ExecuteGitCommand( enableLightweightTagMatch ? "describe --tags" : "describe")
+                return ExecuteGitCommand(enableLightweightTagMatch ? "describe --tags" : "describe")
                     .Replace("\n", string.Empty);
             }
             catch (GitCommandExecutionError e)
@@ -159,8 +160,9 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             try
             {
-	            // Use --no-pager option to avoid to wait for user input by pagination.
-                var (standardOutput, standardError, exitCode) = ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
+                // Use --no-pager option to avoid to wait for user input by pagination.
+                var (standardOutput, standardError, exitCode) =
+                    ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
                 if (exitCode != 0)
                 {
                     throw new GitCommandExecutionError(arguments, exitCode, standardError);
@@ -174,63 +176,70 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
 
-        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command, float timeOutSeconds = 10)
+        private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command,
+            float timeOutSeconds = 10)
         {
             // Create a Process object
-            using (var process = new System.Diagnostics.Process()) {
-	            switch (Application.platform) {
-		            case RuntimePlatform.WindowsEditor:
-			            // Get the path of ComSpec(cmd.exe) and set it to FileName property
-			            var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
-			            if (cmdPath == null) {
-				            throw new CommandExecutionErrorException(command,
-					            "Command Prompt is not found because environment variable \"ComSpec\" doesn'T exist.");
-			            }
+            using (var process = new System.Diagnostics.Process())
+            {
+                switch (Application.platform)
+                {
+                    case RuntimePlatform.WindowsEditor:
+                        // Get the path of ComSpec(cmd.exe) and set it to FileName property
+                        var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
+                        if (cmdPath == null)
+                        {
+                            throw new CommandExecutionErrorException(command,
+                                "Command Prompt is not found because environment variable \"ComSpec\" doesn'T exist.");
+                        }
 
-			            process.StartInfo.FileName = cmdPath;
-			            process.StartInfo.Arguments = "/c " + command;
-			            break;
-		            case RuntimePlatform.OSXEditor:
-		            case RuntimePlatform.LinuxEditor:
-			            process.StartInfo.FileName = "/bin/bash";
-			            process.StartInfo.Arguments = "-c \" " + command + "\"";
-			            break;
-		            default: {
-			            throw new CommandExecutionErrorException(command,
-				            $"Command execution is not supported in current platform ({Application.platform}).");
-		            }
-	            }
+                        process.StartInfo.FileName = cmdPath;
+                        process.StartInfo.Arguments = "/c " + command;
+                        break;
+                    case RuntimePlatform.OSXEditor:
+                    case RuntimePlatform.LinuxEditor:
+                        process.StartInfo.FileName = "/bin/bash";
+                        process.StartInfo.Arguments = "-c \" " + command + "\"";
+                        break;
+                    default:
+                    {
+                        throw new CommandExecutionErrorException(command,
+                            $"Command execution is not supported in current platform ({Application.platform}).");
+                    }
+                }
 
-	            // Enable to read outputs
-	            process.StartInfo.UseShellExecute = false;
-	            process.StartInfo.RedirectStandardOutput = true;
-	            process.StartInfo.RedirectStandardError = true;
-	            process.StartInfo.RedirectStandardInput = false;
-	            // Prevent to show window
-	            process.StartInfo.CreateNoWindow = true;
+                // Enable to read outputs
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.RedirectStandardInput = false;
+                // Prevent to show window
+                process.StartInfo.CreateNoWindow = true;
 
-	            // Run process
-	            process.Start();
+                // Run process
+                process.Start();
 
-	            // Read output
-	            // To prevent for this process to be blocked by full of output stream buffer, we wait finish of the command with reading output stream asynchronously.
-	            using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
-	            using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync())){
-		            // Wait for process finish
-		            if (!process.WaitForExit((int)(timeOutSeconds * 1000))) {
-			            // Stop the process if timeout
-			            process.Kill();
-			            process.WaitForExit();
-			            standardOutputTask.Wait();
-			            standardErrorTask.Wait();
-			            throw new CommandExecutionErrorException(command, "Timeout");
-		            }
+                // Read output
+                // To prevent for this process to be blocked by full of output stream buffer, we wait finish of the command with reading output stream asynchronously.
+                using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
+                using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync()))
+                {
+                    // Wait for process finish
+                    if (!process.WaitForExit((int)(timeOutSeconds * 1000)))
+                    {
+                        // Stop the process if timeout
+                        process.Kill();
+                        process.WaitForExit();
+                        standardOutputTask.Wait();
+                        standardErrorTask.Wait();
+                        throw new CommandExecutionErrorException(command, "Timeout");
+                    }
 
-		            standardOutputTask.Wait();
-		            standardErrorTask.Wait();
-		            return (standardOutputTask.Result.Replace("\r\n", "\n"),
-			            standardErrorTask.Result.Replace("\r\n", "\n"), process.ExitCode);
-	            }
+                    standardOutputTask.Wait();
+                    standardErrorTask.Wait();
+                    return (standardOutputTask.Result.Replace("\r\n", "\n"),
+                        standardErrorTask.Result.Replace("\r\n", "\n"), process.ExitCode);
+                }
             }
         }
 
@@ -251,7 +260,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             }
         }
     }
-    
+
     /// <summary>
     /// An exception class for git command execution error.
     /// </summary>
