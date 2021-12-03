@@ -164,6 +164,16 @@ UnityGitVersionにより生成されるバージョン文字列のフォーマ�
 エディタでゲームを再生するとき、又はゲームをビルドする前のタイミングで、バージョン情報が生成され、保存されます。
 このとき、バージョン情報を持つアセットは`Assets/PlanetaGameLabo/UnityGitVersion/Resources`ディレクトリに保存されますが、アセットファイルは`PlanetaGameLabo/UnityGitVersion`に自動的に生成される`.gitignore`によって無視されるため、Gitには影響しません。
 
+### 最新コミットとその時点でのリポジトリ状態の差分のハッシュをどのように生成しているか
+
+`%d`と`%D`で生成されるハッシュは、以下三つの文字列を組み合わせた文字列のSHA1ハッシュです。
+
+- `git diff HEAD`の結果
+- `git status`の結果から抽出した未追跡ファイルのパス
+- `git status`の結果から抽出した未追跡ファイルの最終更新日時
+
+`git diff HEAD`の結果は未追跡ファイルを含まないため、`git status`を併用することで未追跡ファイルの状態もハッシュに含めています。
+
 ### スクリプトでのGit操作
 
 `PlanetaGameLabo.UnityGitVersion.GitOperator`クラスを使用して、コミットIDを取得するなどの操作を実行できます。

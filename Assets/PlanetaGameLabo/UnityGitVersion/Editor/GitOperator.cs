@@ -9,6 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 using System;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,7 +105,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         }
 
         /// <summary>
-        /// Get a hash of the difference between current repository and last commit.
+        /// Get a hash of the difference between current worktree and the last commit.
         /// </summary>
         /// <param name="shortVersion">Returns short hash with 7 characters if this is true.</param>
         /// <returns>A SHA1 hash of diff between current repository and last commit</returns>
@@ -111,13 +113,21 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             try
             {
-                // コミットしていない変更がある場合は最新コミットとの差分のハッシュを生成しバージョンに加える。
-                // 異なる編集の存在するものは違うバージョン、同じ状態のものは同じバージョンであると保証するため
-                ExecuteGitCommand("add -N .");
+                // Get a string representing difference between worktree and the last commit.
                 var diff = ExecuteGitCommand("diff HEAD");
-                // gitに合わせてSHA1ハッシュを生成
+                
+                // Add file names and last update datetime of untracked file to difference string because untracked files (newly added files) are not included in the result of "git diff" command.
+                var changeResult = ExecuteGitCommand("status -s -uall --porcelain");
+                var changes = changeResult.Split('\n');
+                var untrackedFilePaths = changes.Where(c => c.StartsWith("??")).Select(c=>c.TrimStart('?', ' '));
+                // To ensure consistency among machines with different locales, we use UTC as timezone and ISO datetime string. 
+                var untrackedFilePathsWithUpdateTimes = untrackedFilePaths.Select(u => $"{u}@{new FileInfo(u).LastWriteTimeUtc.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'")}");
+                
+                diff += string.Join("\n", untrackedFilePathsWithUpdateTimes);
+                
+                // Generate SHA1 hash, which is used in Git
                 var hash = GetHashString<SHA1CryptoServiceProvider>(diff);
-                // 短縮版の場合はgitに合わせて7文字にする
+                // Make hash length 7 which is same as the length of short hash in Git if short flag is enabled
                 return shortVersion ? hash.Substring(0, 7) : hash;
             }
             catch (GitCommandExecutionError e)
@@ -149,7 +159,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             try
             {
-	            // ページ送りによるユーザー入力待機を発生させないために--no-pagerオプションを使用
+	            // Use --no-pager option to avoid to wait for user input by pagination.
                 var (standardOutput, standardError, exitCode) = ExecuteCommand($"git --no-pager {arguments}", timeOutSeconds);
                 if (exitCode != 0)
                 {
@@ -166,11 +176,11 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 
         private static (string standardOutput, string standardError, int exitCode) ExecuteCommand(string command, float timeOutSeconds = 10)
         {
-            //Processオブジェクトを作成
+            // Create a Process object
             using (var process = new System.Diagnostics.Process()) {
 	            switch (Application.platform) {
 		            case RuntimePlatform.WindowsEditor:
-			            //ComSpec(cmd.exe)のパスを取得して、FileNameプロパティに指定
+			            // Get the path of ComSpec(cmd.exe) and set it to FileName property
 			            var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
 			            if (cmdPath == null) {
 				            throw new CommandExecutionErrorException(command,
@@ -191,24 +201,24 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
 		            }
 	            }
 
-	            //出力を読み取れるようにする
+	            // Enable to read outputs
 	            process.StartInfo.UseShellExecute = false;
 	            process.StartInfo.RedirectStandardOutput = true;
 	            process.StartInfo.RedirectStandardError = true;
 	            process.StartInfo.RedirectStandardInput = false;
-	            //ウィンドウを表示しないようにする
+	            // Prevent to show window
 	            process.StartInfo.CreateNoWindow = true;
 
-	            //起動
+	            // Run process
 	            process.Start();
 
-	            // 出力を読み取る
-	            // 出力ストリームのバッファがいっぱいになりブロックされるのを防ぐため、非同期で出力ストリームを読み込みながらコマンドの終了を待つ
+	            // Read output
+	            // To prevent for this process to be blocked by full of output stream buffer, we wait finish of the command with reading output stream asynchronously.
 	            using (var standardOutputTask = Task.Run(async () => await process.StandardOutput.ReadToEndAsync()))
 	            using (var standardErrorTask = Task.Run(async () => await process.StandardError.ReadToEndAsync())){
-		            //プロセス終了まで待機する
+		            // Wait for process finish
 		            if (!process.WaitForExit((int)(timeOutSeconds * 1000))) {
-			            // タイムアウトになった場合はプロセスを中断して終了
+			            // Stop the process if timeout
 			            process.Kill();
 			            process.WaitForExit();
 			            standardOutputTask.Wait();
@@ -230,7 +240,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
             using (var algorithm = new T())
             {
                 var hashBytes = algorithm.ComputeHash(data);
-                // バイト型配列を16進数文字列に変換
+                // Convert byte array to hexadecimal string
                 var result = new StringBuilder();
                 foreach (var hashByte in hashBytes)
                 {
