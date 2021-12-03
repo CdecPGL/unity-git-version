@@ -88,7 +88,7 @@ UnityGitVersionにより生成されるバージョン文字列のフォーマ�
 |%d|最新コミットとその時点でのリポジトリ状態の差分のSHA1ハッシュ短縮版|
 |%D|最新コミットとその時点でのリポジトリ状態の差分のSHA1ハッシュ|
 |%x|[git-describe](https://git-scm.com/docs/git-describe)の実行結果|
-|%y|[git-describe](https://git-scm.com/docs/git-describe)に`--tags`オプションを付与した実行結果。短縮タグの検出が有効になる|
+|%y|[git-describe](https://git-scm.com/docs/git-describe)に`--tags`オプションを付与した実行結果。軽量タグの検出が有効になる|
 |%%|%|
 
 リポジトリの状態ごとに、4種類のフォーマットがあります。
