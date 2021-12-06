@@ -218,6 +218,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                 Debug.Log($".gitignore is created to \"{_gitVersionAssetRootDirectory}\"");
             }
 
+            MakeAssetDirectoryRecursively(_gitVersionAssetRootDirectory);
             using (var fs = File.CreateText(_gitVersionAssetRootDirectory + ".gitignore"))
             {
                 fs.WriteLine("################");
