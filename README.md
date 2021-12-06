@@ -20,7 +20,21 @@ This asset can be used for the following purposes.
 
 ## Install
 
-You can install UnityGitVersion by below steps.
+### UPM Package via Open UPM
+
+You can install UnityGitVersion via open upm.
+[Prepare `openupm-cli`](https://openupm.com/docs/getting-started.html#installing-openupm-cli), then run below command in your project directory.
+
+```bash
+openupm add com.cdecpgl.git-version
+```
+
+It is also possible to install upm without open upm by adding scoped registory or by git URL in package manager of Unity.
+
+### Unity Package
+
+You can install UnityGitVersion as an Unity Package by below steps.
+Use this method if the version of your Unity doesn't supports UPM.
 
 1. Download latest `UnityGitVersion.unitypackage` from [the release page](https://github.com/CdecPGL/unity-git-version/releases)
 1. Import downloaded unity package to your project

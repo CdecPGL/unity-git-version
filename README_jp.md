@@ -17,7 +17,21 @@ Gitの管理情報から、`v1.0.0-commit-abcdefg`のようなゲームバージ
 
 ## インストール
 
-以下の手順でUnityGitVersionをインストールできます。
+### UPM Package via Open UPM
+
+Open UPMを使用してUnityGitVersionをインストールできます。
+[`openupm-cli`を準備し](https://openupm.com/docs/getting-started.html#installing-openupm-cli)、以下のコマンドをプロジェクトディレクトリで実行してください。
+
+```bash
+openupm add com.cdecpgl.git-version
+```
+
+Unity内のパッケージマネージャーで、スコープドレジストリを追加するかGit URLを指定することで、Open UPMを使わずにインストールすることもできます。
+
+### Unity Package
+
+以下の手順でUnityGitVersionをUnityPackageとしてインストールできます。
+UPMに対応していないバージョンのUnityを使用している場合はこの方法でインストールしてください。
 
 1. [リリースページ](https://github.com/CdecPGL/unity-git-version/releases)から最新の`UnityGitVersion.unitypackage`をダウンロードする
 1. ダウンロードしたUnityパッケージを使用したいプロジェクトにインポートする
