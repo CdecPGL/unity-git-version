@@ -6,7 +6,7 @@
 
 [日本語README](README_jp.md)
 
-An asset to autonatically generate a version string with Git like `v1.0.0-commit-abcdefg`.
+An asset to automatically generate a version string with Git like `v1.0.0-commit-abcdefg`.
 This asset can be used for the following purposes.
 
 - Display game version

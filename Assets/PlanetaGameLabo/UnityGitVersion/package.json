@@ -2,7 +2,7 @@
     "name": "com.cdecpgl.git-version",
     "version": "0.2.0",
     "displayName": "UnityGitVersion",
-    "description": "Gitのリポジトリ情報からバージョン文字列を自動生成するためのパッケージ",
+    "description": "A package to automatically generate a version string with Git.",
     "unity": "2018.1",
     "keywords": [
         "git"
