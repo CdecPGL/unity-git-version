@@ -29,7 +29,18 @@ You can install UnityGitVersion via open upm.
 openupm add com.cdecpgl.git-version
 ```
 
-It is also possible to install upm without open upm by adding scoped registory or by git URL in package manager of Unity.
+It is also possible to install upm without open upm by adding scoped registory in package manager of Unity.
+
+### UPM Package via Git URI
+
+You can install UnityGitVersion via Git URI.
+
+1. Open package manager in Unity
+1. Click "+" button at top left of the package manager window
+1. Click "Add package from git URI..."
+1. Input `https://github.com/CdecPGL/unity-git-version.git?path=Assets/PlanetaGameLabo/UnityGitVersion` and click "Add" button
+
+![UPM Package via Git URI](Documents/install_via_git_uri.jpg)
 
 ### Unity Package
 
