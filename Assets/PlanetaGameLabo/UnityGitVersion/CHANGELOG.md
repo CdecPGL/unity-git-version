@@ -4,7 +4,7 @@
 
 ### Fixes
 
-- A bug that editor crashed when "Log Version String" is selected
+- A bug that editor crashes when "Log Version String" is selected
 
 ## [0.2.0] - 2021-12-07
 

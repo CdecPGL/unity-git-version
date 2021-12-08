@@ -17,7 +17,27 @@ Gitの管理情報から、`v1.0.0-commit-abcdefg`のようなゲームバージ
 
 ## インストール
 
-### UPM Package via Open UPM
+### UPM PackageをGit URIを指定してインポートする
+
+Git URIを指定してUnityGitVersionをインストールできます。
+
+1. Unity内でパッケージマネージャーを開く
+1. パッケージマネージャーウインドウの左上にある「+」ボタンをクリックする
+1. 「Add package from git URI...」をクリックする
+1. `https://github.com/CdecPGL/unity-git-version.git?path=Assets/PlanetaGameLabo/UnityGitVersion`と入力し「Add」ボタンを押す
+
+![UPM Package via Git URI](Documents/install_via_git_uri.jpg)
+
+### Unity Packageをインポートする
+
+以下の手順でUnityGitVersionをUnityPackageとしてインストールできます。
+UPMに対応していないバージョンのUnityを使用している場合はこの方法でインストールしてください。
+
+1. [リリースページ](https://github.com/CdecPGL/unity-git-version/releases)から最新の`UnityGitVersion.unitypackage`をダウンロードする
+1. ダウンロードしたUnityパッケージを使用したいプロジェクトにインポートする
+1. ^o^
+
+### ~~UPM PackageをOpen UPMでインポートする (対応予定)~~
 
 Open UPMを使用してUnityGitVersionをインストールできます。
 [`openupm-cli`を準備し](https://openupm.com/docs/getting-started.html#installing-openupm-cli)、以下のコマンドをプロジェクトディレクトリで実行してください。
@@ -27,15 +47,6 @@ openupm add com.cdecpgl.git-version
 ```
 
 Unity内のパッケージマネージャーで、スコープドレジストリを追加するかGit URLを指定することで、Open UPMを使わずにインストールすることもできます。
-
-### Unity Package
-
-以下の手順でUnityGitVersionをUnityPackageとしてインストールできます。
-UPMに対応していないバージョンのUnityを使用している場合はこの方法でインストールしてください。
-
-1. [リリースページ](https://github.com/CdecPGL/unity-git-version/releases)から最新の`UnityGitVersion.unitypackage`をダウンロードする
-1. ダウンロードしたUnityパッケージを使用したいプロジェクトにインポートする
-1. ^o^
 
 ## 使い方
 
