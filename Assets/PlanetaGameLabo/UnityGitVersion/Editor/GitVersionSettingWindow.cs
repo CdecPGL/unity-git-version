@@ -50,7 +50,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             if (!_isAssetCreated)
             {
-                GitVersionOnEditor.MakeAssetDirectoryRecursively(GitVersionOnEditor.resourceDirectory);
+                GitVersionOnEditor.MakeAssetDirectoryRecursively(GitVersionOnEditor.versionSettingPath);
                 AssetDatabase.CreateAsset(_gitVersionSetting, GitVersionOnEditor.versionSettingPath);
                 _isAssetCreated = true;
             }
