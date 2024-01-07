@@ -1,6 +1,6 @@
 {
     "name": "com.cdecpgl.git-version",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "displayName": "UnityGitVersion",
     "description": "A package to automatically generate a version string with Git.",
     "unity": "2018.1",

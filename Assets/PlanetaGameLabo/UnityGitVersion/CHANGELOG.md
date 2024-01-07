@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2] - 2024-01-07
+
+### Fixes
+
+- A bug that editor crashes  in specific versions of Unity when setting windows is closed
+
 ## [0.2.1] - 2021-12-08
 
 ### Fixes
