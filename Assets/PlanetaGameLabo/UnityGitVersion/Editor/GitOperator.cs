@@ -185,6 +185,7 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                 switch (Application.platform)
                 {
                     case RuntimePlatform.WindowsEditor:
+                    {
                         // Get the path of ComSpec(cmd.exe) and set it to FileName property
                         var cmdPath = Environment.GetEnvironmentVariable("ComSpec");
                         if (cmdPath == null)
@@ -196,11 +197,15 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
                         process.StartInfo.FileName = cmdPath;
                         process.StartInfo.Arguments = "/c " + command;
                         break;
+                    }
                     case RuntimePlatform.OSXEditor:
                     case RuntimePlatform.LinuxEditor:
-                        process.StartInfo.FileName = "/bin/bash";
+                    {
+                        var cmdPath = Environment.GetEnvironmentVariable("SHELL");
+                        process.StartInfo.FileName = cmdPath;
                         process.StartInfo.Arguments = "-c \" " + command + "\"";
                         break;
+                    }
                     default:
                     {
                         throw new CommandExecutionErrorException(command,

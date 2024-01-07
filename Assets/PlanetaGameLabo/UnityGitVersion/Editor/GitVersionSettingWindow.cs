@@ -9,6 +9,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 using UnityEditor;
+using UnityEngine;
 
 namespace PlanetaGameLabo.UnityGitVersion.Editor
 {
@@ -50,7 +51,22 @@ namespace PlanetaGameLabo.UnityGitVersion.Editor
         {
             if (!_isAssetCreated)
             {
-                GitVersionOnEditor.MakeAssetDirectoryRecursively(GitVersionOnEditor.versionSettingPath);
+                var parentSeparatorIndex = GitVersionOnEditor.versionSettingPath.LastIndexOf('/');
+                if (parentSeparatorIndex < 0)
+                {
+                    Debug.LogError($"The version setting path is invalid. ({GitVersionOnEditor.versionSettingPath})");
+                    return;
+                }
+
+                var parentDirectory = GitVersionOnEditor.versionSettingPath.Substring(0, parentSeparatorIndex);
+                GitVersionOnEditor.MakeAssetDirectoryRecursively(parentDirectory);
+
+                // Remove the directory which is created by mistake before v0.2.1.
+                if (AssetDatabase.IsValidFolder(GitVersionOnEditor.versionSettingPath))
+                {
+                    AssetDatabase.DeleteAsset(GitVersionOnEditor.versionSettingPath);
+                }
+
                 AssetDatabase.CreateAsset(_gitVersionSetting, GitVersionOnEditor.versionSettingPath);
                 _isAssetCreated = true;
             }
